@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delhi Metro PathFinder – Smart Route Planner</title>
+  <meta name="description" content="Find the fastest route between any two Delhi Metro stations using Dijkstra's algorithm. Covers all 11 lines and 300+ stations." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M12 3v18"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-title">Delhi Metro</span>
+          <span class="logo-subtitle">PathFinder</span>
+        </div>
+      </div>
+      <div class="header-badge">
+        <span class="badge-dot"></span>
+        <span>Dijkstra's Algorithm</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- Hero section -->
+    <section class="hero">
+      <h1 class="hero-title">Delhi Metro <span class="gradient-text">PathFinder</span></h1>
+      <p class="hero-subtitle">Smart pathfinding across 300+ stations &amp; 11 metro lines.</p>
+
+      <!-- Line indicators -->
+      <div class="line-pills" id="line-pills">
+        <span class="pill" style="--c:#e53935">Red</span>
+        <span class="pill" style="--c:#fbbf24">Yellow</span>
+        <span class="pill" style="--c:#3b82f6">Blue</span>
+        <span class="pill" style="--c:#22c55e">Green</span>
+        <span class="pill" style="--c:#8b5cf6">Violet</span>
+        <span class="pill" style="--c:#ec4899">Pink</span>
+        <span class="pill" style="--c:#d946ef">Magenta</span>
+        <span class="pill" style="--c:#94a3b8">Grey</span>
+        <span class="pill" style="--c:#06b6d4">Aqua</span>
+        <span class="pill" style="--c:#f97316">Orange</span>
+        <span class="pill" style="--c:#78716c">Rapid</span>
+      </div>
+    </section>
+
+    <!-- Search card -->
+    <section class="search-section">
+      <div class="card search-card">
+        <div class="card-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <span>Plan Your Journey</span>
+        </div>
+
+        <form id="route-form" autocomplete="off">
+          <div class="input-row">
+            <!-- From station -->
+            <div class="input-group">
+              <label for="from-input" class="input-label">
+                <span class="station-dot from-dot"></span>
+                From Station
+              </label>
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="from-input"
+                  class="station-input"
+                  placeholder="e.g. Rajiv Chowk"
+                  list="from-datalist"
+                  required
+                />
+                <datalist id="from-datalist"></datalist>
+                <button type="button" class="clear-btn" id="clear-from" aria-label="Clear from station">✕</button>
+              </div>
+            </div>
+
+            <!-- Swap button -->
+            <button type="button" class="swap-btn" id="swap-btn" aria-label="Swap stations">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M7 16V4m0 0L3 8m4-4 4 4"/><path d="M17 8v12m0 0 4-4m-4 4-4-4"/>
+              </svg>
+            </button>
+
+            <!-- To station -->
+            <div class="input-group">
+              <label for="to-input" class="input-label">
+                <span class="station-dot to-dot"></span>
+                To Station
+              </label>
+              <div class="input-wrapper">
+                <input
+                  type="text"
+                  id="to-input"
+                  class="station-input"
+                  placeholder="e.g. Kashmere Gate"
+                  list="to-datalist"
+                  required
+                />
+                <datalist id="to-datalist"></datalist>
+                <button type="button" class="clear-btn" id="clear-to" aria-label="Clear to station">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="find-btn" id="find-btn">
+            <span class="find-btn-text">Find Route</span>
+            <span class="find-btn-loader" hidden>
+              <span class="loader-ring"></span>
+            </span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Result section -->
+    <section id="result-section" class="result-section" hidden>
+
+      <!-- Stats bar -->
+      <div class="stats-bar" id="stats-bar">
+        <div class="stat">
+          <span class="stat-icon">⏱️</span>
+          <div>
+            <div class="stat-value" id="stat-time">–</div>
+            <div class="stat-label">minutes</div>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-icon">🚉</span>
+          <div>
+            <div class="stat-value" id="stat-stations">–</div>
+            <div class="stat-label">stations</div>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-icon">🔄</span>
+          <div>
+            <div class="stat-value" id="stat-changes">–</div>
+            <div class="stat-label">changes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Route display -->
+      <div class="card route-card" id="route-card">
+        <div class="card-header">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+          <span>Route Details</span>
+        </div>
+        <div id="route-content"></div>
+      </div>
+
+    </section>
+
+    <!-- Error section -->
+    <div id="error-section" class="error-card" hidden>
+      <div class="error-icon">⚠️</div>
+      <div id="error-message">Something went wrong.</div>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div id="loading-section" class="loading-section" hidden>
+      <div class="skeleton skeleton-stats"></div>
+      <div class="skeleton skeleton-route"></div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Delhi Metro PathFinder · Powered by Dijkstra's Algorithm · C++ Backend with cpp-httplib</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
